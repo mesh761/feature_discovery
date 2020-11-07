@@ -137,6 +137,8 @@ class DescribedFeatureOverlay extends StatefulWidget {
   /// all of the current steps are dismissed.
   final Future<bool> Function() onBackgroundTap;
 
+  final double targetRadious;
+
   const DescribedFeatureOverlay({
     Key key,
     @required this.featureId,
@@ -162,6 +164,7 @@ class DescribedFeatureOverlay extends StatefulWidget {
     this.barrierDismissible = true,
     this.backgroundDismissible = false,
     this.onBackgroundTap,
+    this.targetRadious = 44.0,
   })  : assert(featureId != null),
         assert(tapTarget != null),
         assert(child != null),
@@ -600,7 +603,7 @@ class _DescribedFeatureOverlayState extends State<DescribedFeatureOverlay>
     final contentPosition = Offset(
       (dx.isNegative) ? 0.0 : dx,
       anchor.dy +
-          contentOffsetMultiplier * (44 + 20), // 44 is the tap target's radius.
+          contentOffsetMultiplier * (widget.targetRadious + 20), // 44 is the tap target's radius.
     );
 
     Widget background = Container(
@@ -687,6 +690,7 @@ class _DescribedFeatureOverlayState extends State<DescribedFeatureOverlay>
           transitionProgress: _transitionProgress,
           anchor: anchor,
           color: widget.targetColor,
+          targetRadious: widget.targetRadious,
         ),
         _TapTarget(
           state: _state,
@@ -695,6 +699,7 @@ class _DescribedFeatureOverlayState extends State<DescribedFeatureOverlay>
           color: widget.targetColor,
           onPressed: tryCompleteThis,
           child: widget.tapTarget,
+          targetRadious: widget.targetRadious,
         ),
       ],
     );
@@ -806,6 +811,7 @@ class _Pulse extends StatelessWidget {
   final double transitionProgress;
   final Offset anchor;
   final Color color;
+  final double targetRadious;
 
   const _Pulse({
     Key key,
@@ -813,6 +819,7 @@ class _Pulse extends StatelessWidget {
     @required this.transitionProgress,
     @required this.anchor,
     @required this.color,
+    @required this.targetRadious
   })  : assert(state != null),
         assert(transitionProgress != null),
         assert(anchor != null),
@@ -828,7 +835,7 @@ class _Pulse extends StatelessWidget {
         } else {
           expandedPercent = 0.0;
         }
-        return 44.0 + (35.0 * expandedPercent);
+        return targetRadious + (35.0 * expandedPercent);
       case FeatureOverlayState.dismissing:
       case FeatureOverlayState.completing:
         return 0; //(44.0 + 35.0) * (1.0 - transitionProgress);
@@ -878,6 +885,7 @@ class _TapTarget extends StatelessWidget {
   final Widget child;
   final Color color;
   final VoidCallback onPressed;
+  final double targetRadious;
 
   const _TapTarget({
     Key key,
@@ -887,6 +895,7 @@ class _TapTarget extends StatelessWidget {
     @required this.color,
     @required this.state,
     @required this.transitionProgress,
+    @required this.targetRadious,
   })  : assert(anchor != null),
         assert(child != null),
         assert(state != null),
@@ -927,7 +936,7 @@ class _TapTarget extends StatelessWidget {
         } else {
           expandedPercent = 0;
         }
-        return 44 + (20 * expandedPercent);
+        return targetRadious + (20 * expandedPercent);
       case FeatureOverlayState.completing:
       case FeatureOverlayState.dismissing:
         return 20 + 24 * (1 - transitionProgress);
